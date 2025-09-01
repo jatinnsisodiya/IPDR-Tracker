@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPDR Call Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+        }
+        .spinner { 
+            border-top-color: #60a5fa; /* Light Blue */
+        }
+        /* Custom class for the glass effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 bg-gradient-to-br from-gray-900 to-slate-800">
+
+    <div class="container mx-auto p-4 md:p-8 min-h-screen">
+        <header class="text-center mb-10">
+            <h1 class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                IPDR Call Tracker
+            </h1>
+            <p class="text-lg text-gray-400 mt-2">Analyze call logs to detect suspicious patterns and activity.</p>
+        </header>
+
+        <main>
+            <!-- Upload and Control Section -->
+            <div class="glass-card p-6 rounded-xl shadow-lg mb-8 transition-all duration-300">
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-3 text-white">Step 1: Upload Data</h2>
+                <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <input type="file" id="csv-file-input" accept=".csv" class="flex-grow w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-slate-700 file:text-blue-300 hover:file:bg-slate-600 transition-colors">
+                    <button id="upload-btn" class="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 flex items-center justify-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                        <span>Upload</span>
+                    </button>
+                </div>
+                <div id="status-message" class="mt-4 text-center h-6"></div>
+            </div>
+
+            <!-- Analysis Section -->
+            <div id="analysis-section" class="glass-card p-6 rounded-xl shadow-lg mb-8 hidden">
+                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-3 text-white">Step 2: Analyze & Filter</h2>
+                <div class="mb-6">
+                    <label for="search-input" class="block text-sm font-medium text-gray-400 mb-1">Search Number:</label>
+                    <div class="flex">
+                        <input type="text" id="search-input" placeholder="Enter phone number..." class="flex-grow p-2 bg-gray-800 border border-gray-600 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white">
+                        <button id="search-btn" class="bg-slate-600 text-white font-bold py-2 px-4 rounded-r-lg hover:bg-slate-500 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Find Suspicious Patterns:</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                       <button id="high-volume-btn" class="analysis-btn from-amber-500 to-orange-600">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M3 3a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 13.846 4.61 15 6 15h8a1 1 0 000-2H6d.314-.622l.932-.931a1 1 0 000-1.414l-2.01-2.012A1 1 0 005.121 7L3 3z" /><path d="M11.314 11.932l.068.068a.997.997 0 00.01.042l1.358 5.43-.893.892C11.74 21.846 12.61 23 14 23h8a1 1 0 000-2h-8d.314-.622l.932-.931a1 1 0 000-1.414l-2.01-2.012a1 1 0 00-1.414 1.414z" transform="translate(0 -8)"/></svg>
+                           <span>High Volume</span>
+                        </button>
+                       <button id="malicious-calls-btn" class="analysis-btn from-red-500 to-red-700">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>
+                           <span>Malicious Calls</span>
+                        </button>
+                       <button id="suspicious-ips-btn" class="analysis-btn from-purple-500 to-purple-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5.026a12.005 12.005 0 01-1.442 6.573c.355.51.774 1 1.255 1.472l.206.183c.473.423 1 .79 1.57 1.118l.192.109c.56.316 1.18.58 1.844.766l.201.056c.67.18 1.36.275 2.067.275s1.397-.095 2.067-.275l.201-.056c.664-.186 1.284-.45 1.844-.766l.192-.109c.57-.328 1.097-.695 1.57-1.118l.206-.183c.481-.472.9-1.03 1.255-1.472a12.005 12.005 0 01-1.442-6.573A11.954 11.954 0 0110 1.944zM8.25 12.12a.75.75 0 011.06 0l1.25 1.25a.75.75 0 11-1.06 1.06L9 13.72a.75.75 0 010-1.061l-1.25-1.25a.75.75 0 01-1.06 1.06L8.25 12.12z" clip-rule="evenodd" /></svg>
+                           <span>Suspicious IPs</span>
+                        </button>
+                       <button id="same-pattern-btn" class="analysis-btn from-green-500 to-green-600">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z" /></svg>
+                           <span>Same Pattern</span>
+                        </button>
+                       <button id="odd-hours-btn" class="analysis-btn from-indigo-500 to-indigo-600">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" /></svg>
+                           <span>Odd Hours</span>
+                        </button>
+                       <button id="reset-btn" class="analysis-btn from-gray-500 to-gray-600">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.899 2.186l-1.503.867A5.002 5.002 0 005.999 7V9a1 1 0 01-2 0V3a1 1 0 011-1zm12 14a1 1 0 01-1-1v-2.101a7.002 7.002 0 01-11.899-2.186l1.503-.867A5.002 5.002 0 0014.001 13v-2a1 1 0 012 0v5a1 1 0 01-1 1z" clip-rule="evenodd" /></svg>
+                           <span>Reset View</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Results Section -->
+            <div id="results-section" class="hidden">
+                 <h2 id="results-title" class="text-2xl font-semibold mb-4 text-white">Results</h2>
+                <div class="flex items-center justify-center mb-4 h-8">
+                    <div id="loader" class="spinner animate-spin rounded-full h-8 w-8 border-4 border-gray-700" style="display: none;"></div>
+                </div>
+                <div class="glass-card rounded-lg shadow-lg overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead id="results-head" class="bg-white/5"></thead>
+                        <tbody id="results-body" class="divide-y divide-gray-800"></tbody>
+                    </table>
+                    <p id="no-results" class="text-center py-8 text-gray-400 hidden">No results found.</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://127.0.0.1:8000';
+        // All element references are the same
+        const uploadBtn = document.getElementById('upload-btn');
+        const fileInput = document.getElementById('csv-file-input');
+        const statusMessage = document.getElementById('status-message');
+        const analysisSection = document.getElementById('analysis-section');
+        const resultsSection = document.getElementById('results-section');
+        const resultsTitle = document.getElementById('results-title');
+        const resultsHead = document.getElementById('results-head');
+        const resultsBody = document.getElementById('results-body');
+        const loader = document.getElementById('loader');
+        const noResults = document.getElementById('no-results');
+        const searchBtn = document.getElementById('search-btn');
+        const highVolumeBtn = document.getElementById('high-volume-btn');
+        const maliciousCallsBtn = document.getElementById('malicious-calls-btn');
+        const suspiciousIpsBtn = document.getElementById('suspicious-ips-btn');
+        const samePatternBtn = document.getElementById('same-pattern-btn');
+        const oddHoursBtn = document.getElementById('odd-hours-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        // Style for all analysis buttons - now they are more complex
+        document.querySelectorAll('.analysis-btn').forEach(button => {
+            button.classList.add(
+                'text-white', 'font-bold', 'py-3', 'px-4', 'rounded-lg', 
+                'hover:opacity-90', 'transition-all', 'duration-300', 'shadow-md',
+                'hover:shadow-lg', 'transform', 'hover:scale-105', 'bg-gradient-to-br',
+                'flex', 'items-center', 'justify-center', 'space-x-2', 'flex-col', 'sm:flex-row', 'text-center'
+            );
+        });
+        
+        // --- Event Listeners (NO CHANGES HERE) ---
+        uploadBtn.addEventListener('click', async () => {
+            const file = fileInput.files[0];
+            if (!file) {
+                updateStatus('Please select a CSV file first.', 'red');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('file', file);
+            showLoader();
+            updateStatus('Uploading and processing...', 'blue');
+            try {
+                const response = await fetch(`${BASE_URL}/upload-csv/`, { method: 'POST', body: formData });
+                if (response.ok) {
+                    const data = await response.json();
+                    updateStatus(data.message, 'green');
+                    analysisSection.classList.remove('hidden');
+                    resultsSection.classList.remove('hidden');
+                    fetchAndDisplayLogs();
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to upload.');
+                }
+            } catch (error) {
+                console.error("Upload Error:", error);
+                updateStatus(`Error: ${error.message}`, 'red');
+            } finally {
+                hideLoader();
+            }
+        });
+
+        searchBtn.addEventListener('click', () => {
+            const query = document.getElementById('search-input').value;
+            fetchAndDisplayLogs(query);
+        });
+
+        resetBtn.addEventListener('click', () => {
+            document.getElementById('search-input').value = '';
+            fetchAndDisplayLogs();
+        });
+        
+        highVolumeBtn.addEventListener('click', () => fetchDataForAnalysis('/detect/high-volume', 'High Volume Callers'));
+        maliciousCallsBtn.addEventListener('click', () => fetchDataForAnalysis('/detect/malicious-calls', 'Known Malicious Calls'));
+        suspiciousIpsBtn.addEventListener('click', () => fetchDataForAnalysis('/detect/suspicious-ips', 'Calls from Suspicious IPs'));
+        samePatternBtn.addEventListener('click', () => fetchDataForAnalysis('/detect/same-pattern', 'Repetitive Pattern Calls'));
+        oddHoursBtn.addEventListener('click', () => fetchDataForAnalysis('/detect/odd-hours', 'Calls During Odd Hours (1-5 AM)'));
+
+        // --- Functions (Only minor visual changes in renderTable) ---
+        async function fetchAndDisplayLogs(searchQuery = '') {
+            let url = `${BASE_URL}/logs/`;
+            if (searchQuery) { url += `?search=${encodeURIComponent(searchQuery)}`; }
+            resultsTitle.textContent = searchQuery ? `Search Results for "${searchQuery}"` : 'All Call Logs';
+            await fetchDataAndRender(url);
+        }
+        
+        async function fetchDataForAnalysis(endpoint, title) {
+            resultsTitle.textContent = title;
+            await fetchDataAndRender(`${BASE_URL}${endpoint}`);
+        }
+
+        async function fetchDataAndRender(url) {
+            showLoader();
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || `Request failed with status ${response.status}`);
+                }
+                const data = await response.json();
+                renderTable(data.results);
+            } catch (error) {
+                console.error("API Error:", error);
+                updateStatus(`Error: ${error.message}`, 'red');
+                renderTable([]);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function renderTable(data) {
+            resultsHead.innerHTML = '';
+            resultsBody.innerHTML = '';
+            noResults.classList.add('hidden');
+            if (!data || data.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            }
+            const headers = Object.keys(data[0]);
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                th.className = 'px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider';
+                headerRow.appendChild(th);
+            });
+            resultsHead.appendChild(headerRow);
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-white/5 transition-colors';
+                headers.forEach(header => {
+                    const td = document.createElement('td');
+                    let cellData = row[header];
+                    if (header.includes('timestamp') && cellData) {
+                       try { cellData = new Date(cellData).toLocaleString(); } catch (e) {}
+                    }
+                    td.textContent = cellData !== null ? cellData : 'N/A';
+                    td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-300';
+                    tr.appendChild(td);
+                });
+                resultsBody.appendChild(tr);
+            });
+        }
+        
+        function updateStatus(message, color) {
+            const colors = {
+                red: 'text-red-400',
+                green: 'text-green-400',
+                blue: 'text-blue-400'
+            };
+            statusMessage.textContent = message;
+            statusMessage.className = `mt-4 text-center h-6 font-semibold ${colors[color] || 'text-gray-400'}`;
+        }
+
+        function showLoader() { loader.style.display = 'block'; }
+        function hideLoader() { loader.style.display = 'none'; }
+    </script>
+</body>
+</html>
